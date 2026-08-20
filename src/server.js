@@ -1,35 +1,42 @@
 import express from "express";
 import "dotenv/config";
 
-const app = express();
+const expenses = [
+  {
+    id: 1,
+    title: "Groceries",
+    amount: 1850,
+    category: "Food",
+    createdAt: "2026-02-03T08:15:00.000Z",
+  },
+  {
+    id: 2,
+    title: "Internet Bill",
+    amount: 150,
+    category: "Utilities",
+    createdAt: "2026-02-05T14:30:00.000Z",
+  },
+  {
+    id: 3,
+    title: "Movie Ticket",
+    amount: 350,
+    category: "Entertainment",
+    createdAt: "2026-02-12T18:45:00.000Z",
+  },
+];
 
-// console.log(app);
+const app = express();
 
 const PORT = process.env.PORT;
 
-// console.log(process.env);
-
 app.get("/", (req, res) => {
-  res.send("Expense Tracker Api Running");
+  res.send("Expense Tracker Backend Running");
 });
 
-app.get("/about", (req, res) => {
-  res.send("Welcome to the About Page");
+app.get("/expenses", (req, res) => {
+  res.json(expenses);
 });
 
-app.get("/health", (req, res) => {
-  res.statusCode = 500;
-  res.json({ status: "ok" });
-});
-
-app.get("/api/status", (req, res) => {
-  res.json({
-    status: "running",
-    service: "expense-tracker-api",
-  });
-});
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-console.log(process.env.PORT);
