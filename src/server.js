@@ -37,6 +37,19 @@ app.get("/expenses", (req, res) => {
   res.json(expenses);
 });
 
+app.get("/expenses/:id", (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+
+  const result = expenses.find((expense) => expense.id === Number(id));
+
+  if (!result) {
+    return res.status(404).json({ message: "Expense not found" });
+  }
+
+  res.json(result);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
