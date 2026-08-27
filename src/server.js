@@ -31,6 +31,7 @@ const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Expense Tracker Backend Running");
@@ -51,6 +52,21 @@ app.get("/expenses/:id", (req, res) => {
   }
 
   res.json(result);
+});
+
+app.post("/expenses", (req, res) => {
+  const newExpense = {
+    ...req.body,
+    id: expenses.length + 1,
+  };
+
+  expenses.push(newExpense);
+
+  res.status(201).json({
+
+      newExpense,
+      message: "expense created Sucessfully",
+  })
 });
 
 app.listen(PORT, () => {
