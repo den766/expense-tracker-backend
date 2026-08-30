@@ -68,6 +68,33 @@ app.post("/expenses", (req, res) => {
   });
 });
 
+app.put("/expenses/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const matchingExpense = expenses.find((expense) => expense.id === id);
+
+  if (!matchingExpense) {
+    return res.status(404).json({
+      message: "Requested resource couldn't be found",
+    });
+  }
+
+  const { title, amount, category } = req.body;
+
+  matchingExpense.title = title;
+  matchingExpense.amount = amount;
+  matchingExpense.category = category;
+
+  console.log("Requested ID:", id);
+  console.log("Current expenses:", expenses);
+
+
+  return res.status(200).json({
+    matchingExpense,
+    message: "Resource updated successfully",
+  });
+});
+
 app.delete("/expenses/:id", (req, res) => {
   const id = req.params.id;
   console.log(id);
