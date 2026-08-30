@@ -2,7 +2,7 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 
-const expenses = [
+let expenses = [
   {
     id: 1,
     title: "Groceries",
@@ -63,10 +63,33 @@ app.post("/expenses", (req, res) => {
   expenses.push(newExpense);
 
   res.status(201).json({
+    newExpense,
+    message: "expense created Sucessfully",
+  });
+});
 
-      newExpense,
-      message: "expense created Sucessfully",
-  })
+app.delete("/expenses/:id", (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+
+  const removeExpense = expenses.filter((expense) => expense.id !== Number(id));
+
+  const requestedExpense = expenses.find(
+    (expense) => expense.id === Number(id),
+  );
+
+  if (!requestedExpense) {
+    return res.status(404).json({
+      message: "Requested Resource coudnt find",
+    });
+  }
+
+  expenses = removeExpense;
+
+  console.log("Requested ID:", id);
+  console.log("Current expenses:", expenses);
+
+  res.status(204).send();
 });
 
 app.listen(PORT, () => {
