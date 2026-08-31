@@ -38,12 +38,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/expenses", (req, res) => {
-  res.json(expenses);
+  res.status(200).send(expenses);
 });
 
 app.get("/expenses/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id);
 
   const result = expenses.find((expense) => expense.id === Number(id));
 
@@ -51,7 +50,10 @@ app.get("/expenses/:id", (req, res) => {
     return res.status(404).json({ message: "Expense not found" });
   }
 
-  res.json(result);
+  res.status(200).json({
+    result,
+    message: "Succesfully retrieved the resource",
+  });
 });
 
 app.post("/expenses", (req, res) => {
@@ -85,10 +87,6 @@ app.put("/expenses/:id", (req, res) => {
   matchingExpense.amount = amount;
   matchingExpense.category = category;
 
-  console.log("Requested ID:", id);
-  console.log("Current expenses:", expenses);
-
-
   return res.status(200).json({
     matchingExpense,
     message: "Resource updated successfully",
@@ -97,7 +95,6 @@ app.put("/expenses/:id", (req, res) => {
 
 app.delete("/expenses/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id);
 
   const removeExpense = expenses.filter((expense) => expense.id !== Number(id));
 
@@ -112,9 +109,6 @@ app.delete("/expenses/:id", (req, res) => {
   }
 
   expenses = removeExpense;
-
-  console.log("Requested ID:", id);
-  console.log("Current expenses:", expenses);
 
   res.status(204).send();
 });
