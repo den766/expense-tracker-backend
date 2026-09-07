@@ -1,30 +1,20 @@
 import express from "express";
+import fs from "node:fs/promises";
 import "dotenv/config";
 import cors from "cors";
+import path from "node:path";
 
-let expenses = [
-  {
-    id: 1,
-    title: "Groceries",
-    amount: 1850,
-    category: "Food",
-    createdAt: "2026-02-03T08:15:00.000Z",
-  },
-  {
-    id: 2,
-    title: "Internet Bill",
-    amount: 150,
-    category: "Utilities",
-    createdAt: "2026-02-05T14:30:00.000Z",
-  },
-  {
-    id: 3,
-    title: "Movie Ticket",
-    amount: 350,
-    category: "Entertainment",
-    createdAt: "2026-02-12T18:45:00.000Z",
-  },
-];
+const filePath = path.join("src", "data", "expenses.json");
+
+async function loadExpenses() {
+  const data = await fs.readFile(filePath, "utf-8");
+
+  return JSON.parse(data);
+}
+
+let expenses = await loadExpenses();
+
+console.log(expenses);
 
 const app = express();
 
