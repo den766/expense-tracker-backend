@@ -12,6 +12,12 @@ async function loadExpenses() {
   return JSON.parse(data);
 }
 
+async function saveExpenses(expense) {
+  const data = JSON.stringify(expense);
+
+  await fs.writeFile(filePath, data);
+}
+
 let expenses = await loadExpenses();
 
 console.log(expenses);
@@ -46,13 +52,15 @@ app.get("/expenses/:id", (req, res) => {
   });
 });
 
-app.post("/expenses", (req, res) => {
+app.post("/expenses", async (req, res) => {
   const newExpense = {
     ...req.body,
     id: expenses.length + 1,
   };
 
   expenses.push(newExpense);
+
+  await saveExpenses(expenses);
 
   res.status(201).json({
     newExpense,
