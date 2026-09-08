@@ -18,9 +18,9 @@ async function saveExpenses(expense) {
   await fs.writeFile(filePath, data);
 }
 
-let expenses = await loadExpenses();
 
-console.log(expenses);
+
+
 
 const app = express();
 
@@ -33,7 +33,8 @@ app.get("/", (req, res) => {
   res.send("Expense Tracker Backend Running");
 });
 
-app.get("/expenses", (req, res) => {
+app.get("/expenses", async (req, res) => {
+  let expenses = await loadExpenses();
   res.status(200).send(expenses);
 });
 
@@ -84,6 +85,8 @@ app.put("/expenses/:id", (req, res) => {
   matchingExpense.title = title;
   matchingExpense.amount = amount;
   matchingExpense.category = category;
+
+  
 
   return res.status(200).json({
     matchingExpense,
