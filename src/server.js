@@ -18,10 +18,6 @@ async function saveExpenses(expense) {
   await fs.writeFile(filePath, data);
 }
 
-
-
-
-
 const app = express();
 
 const PORT = process.env.PORT || 5000;
@@ -54,6 +50,7 @@ app.get("/expenses/:id", (req, res) => {
 });
 
 app.post("/expenses", async (req, res) => {
+  const expenses = await loadExpenses();
   const newExpense = {
     ...req.body,
     id: expenses.length + 1,
@@ -85,8 +82,6 @@ app.put("/expenses/:id", (req, res) => {
   matchingExpense.title = title;
   matchingExpense.amount = amount;
   matchingExpense.category = category;
-
-  
 
   return res.status(200).json({
     matchingExpense,
