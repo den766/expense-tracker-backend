@@ -92,7 +92,8 @@ app.put("/expenses/:id", async (req, res) => {
   });
 });
 
-app.delete("/expenses/:id", (req, res) => {
+app.delete("/expenses/:id", async (req, res) => {
+  const expenses = await loadExpenses();
   const id = req.params.id;
 
   const removeExpense = expenses.filter((expense) => expense.id !== Number(id));
@@ -107,7 +108,7 @@ app.delete("/expenses/:id", (req, res) => {
     });
   }
 
-  expenses = removeExpense;
+  await saveExpenses(removeExpense);
 
   res.status(204).send();
 });
