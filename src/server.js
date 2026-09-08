@@ -66,7 +66,8 @@ app.post("/expenses", async (req, res) => {
   });
 });
 
-app.put("/expenses/:id", (req, res) => {
+app.put("/expenses/:id", async (req, res) => {
+  const expenses = await loadExpenses();
   const id = Number(req.params.id);
 
   const matchingExpense = expenses.find((expense) => expense.id === id);
@@ -82,6 +83,8 @@ app.put("/expenses/:id", (req, res) => {
   matchingExpense.title = title;
   matchingExpense.amount = amount;
   matchingExpense.category = category;
+
+  await saveExpenses(expenses);
 
   return res.status(200).json({
     matchingExpense,
