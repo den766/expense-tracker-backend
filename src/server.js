@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import "dotenv/config";
 import cors from "cors";
 import path from "node:path";
+import crypto from "node:crypto";
 
 const filePath = path.join("src", "data", "expenses.json");
 
@@ -34,10 +35,11 @@ app.get("/expenses", async (req, res) => {
   res.status(200).send(expenses);
 });
 
-app.get("/expenses/:id", (req, res) => {
+app.get("/expenses/:id",async (req, res) => {
+  const expenses = await loadExpenses();
   const id = req.params.id;
 
-  const result = expenses.find((expense) => expense.id === Number(id));
+  const result = expenses.find((expense) => expense.id === id);
 
   if (!result) {
     return res.status(404).json({ message: "Expense not found" });
@@ -53,7 +55,7 @@ app.post("/expenses", async (req, res) => {
   const expenses = await loadExpenses();
   const newExpense = {
     ...req.body,
-    id: expenses.length + 1,
+    id: crypto.randomUUID(),
   };
 
   expenses.push(newExpense);
@@ -68,7 +70,7 @@ app.post("/expenses", async (req, res) => {
 
 app.put("/expenses/:id", async (req, res) => {
   const expenses = await loadExpenses();
-  const id = Number(req.params.id);
+  const id = req.params.id;
 
   const matchingExpense = expenses.find((expense) => expense.id === id);
 
@@ -94,13 +96,12 @@ app.put("/expenses/:id", async (req, res) => {
 
 app.delete("/expenses/:id", async (req, res) => {
   const expenses = await loadExpenses();
+
   const id = req.params.id;
 
-  const removeExpense = expenses.filter((expense) => expense.id !== Number(id));
+  const removeExpense = expenses.filter((expense) => expense.id !== id);
 
-  const requestedExpense = expenses.find(
-    (expense) => expense.id === Number(id),
-  );
+  const requestedExpense = expenses.find((expense) => expense.id === id);
 
   if (!requestedExpense) {
     return res.status(404).json({
