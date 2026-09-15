@@ -32,10 +32,23 @@ app.get("/", (req, res) => {
 
 app.get("/expenses", async (req, res) => {
   let expenses = await loadExpenses();
+
+  const CategoryInfo = req.query.category;
+  if (CategoryInfo) {
+    const filteredExpenses = expenses.filter(
+      (expense) => expense.category === CategoryInfo.toLowerCase(),
+    );
+
+    return res.status(200).send(filteredExpenses);
+  }
+
+  if (CategoryInfo === "") {
+    return res.status(404).json({ message: "Invalid Filter Query" });
+  }
   res.status(200).send(expenses);
 });
 
-app.get("/expenses/:id",async (req, res) => {
+app.get("/expenses/:id", async (req, res) => {
   const expenses = await loadExpenses();
   const id = req.params.id;
 
