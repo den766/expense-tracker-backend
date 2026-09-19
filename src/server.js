@@ -48,23 +48,21 @@ app.get("/expenses", async (req, res) => {
     });
   }
 
+  let result = expenses;
+
   if (categoryInfo) {
-    const filteredExpenses = expenses.filter(
+    result = result.filter(
       (expense) => expense.category === categoryInfo.toLowerCase(),
     );
-
-    return res.status(200).send(filteredExpenses);
   }
 
   if (searchInfo) {
-    const matchingExpenses = expenses.filter((expense) =>
+    result = result.filter((expense) =>
       expense.title.toLowerCase().includes(searchInfo.toLowerCase()),
     );
-
-    return res.status(200).send(matchingExpenses);
   }
 
-  res.status(200).json(expenses);
+  res.status(200).json(result);
 });
 
 app.get("/expenses/:id", async (req, res) => {
