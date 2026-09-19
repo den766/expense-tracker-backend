@@ -33,19 +33,38 @@ app.get("/", (req, res) => {
 app.get("/expenses", async (req, res) => {
   let expenses = await loadExpenses();
 
-  const CategoryInfo = req.query.category;
-  if (CategoryInfo) {
+  const categoryInfo = req.query.category;
+  const searchInfo = req.query.search;
+
+  if (categoryInfo === "") {
+    return res.status(404).json({
+      message: "Invalid Filter Query",
+    });
+  }
+
+  if (searchInfo === "") {
+    return res.status(404).json({
+      message: "Missing Search Query",
+    });
+  }
+
+  if (categoryInfo) {
     const filteredExpenses = expenses.filter(
-      (expense) => expense.category === CategoryInfo.toLowerCase(),
+      (expense) => expense.category === categoryInfo.toLowerCase(),
     );
 
     return res.status(200).send(filteredExpenses);
   }
 
-  if (CategoryInfo === "") {
-    return res.status(404).json({ message: "Invalid Filter Query" });
+  if (searchInfo) {
+    const matchingExpenses = expenses.filter((expense) =>
+      expense.title.toLowerCase().includes(searchInfo.toLowerCase()),
+    );
+
+    return res.status(200).send(matchingExpenses);
   }
-  res.status(200).send(expenses);
+
+  res.status(200).json(expenses);
 });
 
 app.get("/expenses/:id", async (req, res) => {
