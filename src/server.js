@@ -35,6 +35,7 @@ app.get("/expenses", async (req, res) => {
 
   const categoryInfo = req.query.category;
   const searchInfo = req.query.search;
+  const sortInfo = req.query.sort;
 
   if (categoryInfo === "") {
     return res.status(404).json({
@@ -46,6 +47,20 @@ app.get("/expenses", async (req, res) => {
     return res.status(404).json({
       message: "Missing Search Query",
     });
+  }
+
+  if (sortInfo !== undefined) {
+    if (sortInfo === "") {
+      return res.status(400).json({
+        message: "Missing Sort Value",
+      });
+    }
+
+    if (sortInfo !== "amount_asc" && sortInfo !== "amount_desc") {
+      return res.status(400).json({
+        message: "Invalid Sort Value",
+      });
+    }
   }
 
   let result = expenses;
@@ -60,6 +75,14 @@ app.get("/expenses", async (req, res) => {
     result = result.filter((expense) =>
       expense.title.toLowerCase().includes(searchInfo.toLowerCase()),
     );
+  }
+
+  if (sortInfo === "amount_asc") {
+    result = result.toSorted((a, b) => a.amount - b.amount);
+  }
+
+  if (sortInfo === "amount_desc") {
+    result = result.toSorted((a, b) => b.amount - a.amount);
   }
 
   res.status(200).json(result);
