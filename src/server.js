@@ -36,6 +36,9 @@ app.get("/expenses", async (req, res) => {
   const categoryInfo = req.query.category;
   const searchInfo = req.query.search;
   const sortInfo = req.query.sort;
+  const page = Number(req.query.page);
+  const defualtLimit = 5;
+  const limit = Number(req.query.limit) || defualtLimit;
 
   if (categoryInfo === "") {
     return res.status(404).json({
@@ -83,6 +86,22 @@ app.get("/expenses", async (req, res) => {
 
   if (sortInfo === "amount_desc") {
     result = result.toSorted((a, b) => b.amount - a.amount);
+  }
+
+  if (page) {
+    const totalPages = Math.ceil(result.length / limit);
+
+    if (page > totalPages) {
+      return res.status(404).json({
+        message: "Page out of range",
+      });
+    }
+
+    const start = (page - 1) * limit;
+
+    const end = start + limit;
+
+    result = result.slice(start, end);
   }
 
   res.status(200).json(result);
