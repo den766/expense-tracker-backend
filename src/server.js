@@ -19,12 +19,18 @@ async function saveExpenses(expense) {
   await fs.writeFile(filePath, data);
 }
 
+function Logger(req, res, next) {
+  console.log(`[LOG] ${req.method} request made to ${req.url}`);
+  next();
+}
+
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use(Logger);
 
 app.get("/", (req, res) => {
   res.send("Expense Tracker Backend Running");
