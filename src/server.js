@@ -4,6 +4,7 @@ import "dotenv/config";
 import cors from "cors";
 import path from "node:path";
 import crypto from "node:crypto";
+import { requestLogger } from "./middlewares/requestLogger.js";
 
 const filePath = path.join("src", "data", "expenses.json");
 
@@ -19,18 +20,13 @@ async function saveExpenses(expense) {
   await fs.writeFile(filePath, data);
 }
 
-function Logger(req, res, next) {
-  console.log(`[LOG] ${req.method} request made to ${req.url}`);
-  next();
-}
-
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use(Logger);
+app.use(requestLogger);
 
 app.get("/", (req, res) => {
   res.send("Expense Tracker Backend Running");
