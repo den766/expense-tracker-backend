@@ -20,6 +20,13 @@ async function saveExpenses(expense) {
   await fs.writeFile(filePath, data);
 }
 
+const expenseRouter = express.Router();
+
+function expenseMiddleware(req, res, next) {
+  console.log("EXPENSE ROUTER MIDDLEWARE");
+  next();
+}
+
 const app = express();
 
 const PORT = process.env.PORT || 5000;
@@ -27,12 +34,10 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
+expenseRouter.use(expenseMiddleware);
+app.use("/api/expenses", expenseRouter);
 
-app.get("/", (req, res) => {
-  res.send("Expense Tracker Backend Running");
-});
-
-app.get("/expenses", async (req, res) => {
+expenseRouter.get("/", async (req, res) => {
   let expenses = await loadExpenses();
 
   const categoryInfo = req.query.category;
@@ -109,7 +114,7 @@ app.get("/expenses", async (req, res) => {
   res.status(200).json(result);
 });
 
-app.get("/expenses/:id", async (req, res) => {
+expenseRouter.get("/:id", async (req, res) => {
   const expenses = await loadExpenses();
   const id = req.params.id;
 
@@ -125,7 +130,7 @@ app.get("/expenses/:id", async (req, res) => {
   });
 });
 
-app.post("/expenses", async (req, res) => {
+expenseRouter.post("/", async (req, res) => {
   const expenses = await loadExpenses();
   const newExpense = {
     ...req.body,
@@ -142,7 +147,7 @@ app.post("/expenses", async (req, res) => {
   });
 });
 
-app.put("/expenses/:id", async (req, res) => {
+expenseRouter.put("/:id", async (req, res) => {
   const expenses = await loadExpenses();
   const id = req.params.id;
 
@@ -168,7 +173,7 @@ app.put("/expenses/:id", async (req, res) => {
   });
 });
 
-app.delete("/expenses/:id", async (req, res) => {
+expenseRouter.delete("/:id", async (req, res) => {
   const expenses = await loadExpenses();
 
   const id = req.params.id;
