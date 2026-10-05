@@ -5,6 +5,8 @@ import cors from "cors";
 import path from "node:path";
 import crypto from "node:crypto";
 import { requestLogger } from "./middlewares/requestLogger.js";
+import { validationMiddleware } from "./middlewares/validationMiddleware.js";
+import { notFoundMiddleware } from "./middlewares/notFoundMiddleware.js";
 
 const filePath = path.join("src", "data", "expenses.json");
 
@@ -21,6 +23,8 @@ async function saveExpenses(expense) {
 }
 
 const expenseRouter = express.Router();
+
+// Router Level Middleware
 
 function expenseMiddleware(req, res, next) {
   console.log("EXPENSE ROUTER MIDDLEWARE");
@@ -130,7 +134,8 @@ expenseRouter.get("/:id", async (req, res) => {
   });
 });
 
-expenseRouter.post("/", async (req, res) => {
+expenseRouter.post("/", validationMiddleware, async (req, res) => {
+  console.log("postrouteExecuted");
   const expenses = await loadExpenses();
   const newExpense = {
     ...req.body,
@@ -192,6 +197,8 @@ expenseRouter.delete("/:id", async (req, res) => {
 
   res.status(204).send();
 });
+
+app.use(notFoundMiddleware);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
