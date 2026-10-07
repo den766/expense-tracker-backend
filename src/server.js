@@ -138,8 +138,11 @@ expenseRouter.post("/", validationMiddleware, async (req, res) => {
   console.log("postrouteExecuted");
   const expenses = await loadExpenses();
   const newExpense = {
-    ...req.body,
     id: crypto.randomUUID(),
+    title: req.body.title,
+    amount: req.body.amount,
+    category: req.body.category,
+    createdAt: req.body.createdAt,
   };
 
   expenses.push(newExpense);
