@@ -26,24 +26,42 @@ export function validationMiddleware(req, res, next) {
   // Amount validation
 
   if (!userInputs.hasOwnProperty("amount")) {
-  return res.status(400).json({
-    message: "amount is missing, please input the amount",
-  });
-}
+    return res.status(400).json({
+      message: "amount is missing, please input the amount",
+    });
+  }
 
-if (typeof userInputs.amount !== "number") {
-  return res.status(400).json({
-    message: "amount must be a number",
-  });
-}
+  if (typeof userInputs.amount !== "number") {
+    return res.status(400).json({
+      message: "amount must be a number",
+    });
+  }
 
-if (userInputs.amount <= 0) {
-  return res.status(400).json({
-    message: "amount must be greater than zero",
-  });
-}
+  if (userInputs.amount <= 0) {
+    return res.status(400).json({
+      message: "amount must be greater than zero",
+    });
+  }
 
-  next()
+  // Category Validation
 
-  
+  if (!userInputs.hasOwnProperty("category")) {
+    return res.status(400).json({
+      message: "category is missing, please input the category",
+    });
+  }
+
+  if (typeof userInputs.category !== "string") {
+    return res.status(400).json({
+      message: "category must be a string",
+    });
+  }
+
+  if (userInputs.category.trim() === "") {
+    return res.status(400).json({
+      message: "category can't be empty",
+    });
+  }
+
+  next();
 }
