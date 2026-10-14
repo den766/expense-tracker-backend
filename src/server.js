@@ -7,6 +7,8 @@ import crypto from "node:crypto";
 import { requestLogger } from "./middlewares/requestLogger.js";
 import { validationMiddleware } from "./middlewares/validationMiddleware.js";
 import { notFoundMiddleware } from "./middlewares/notFoundMiddleware.js";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
+import { AppError } from "./errors/AppError.js";
 
 const filePath = path.join("src", "data", "expenses.json");
 
@@ -27,7 +29,7 @@ const expenseRouter = express.Router();
 // Router Level Middleware
 
 function expenseMiddleware(req, res, next) {
-  console.log("EXPENSE ROUTER MIDDLEWARE");
+  // console.log("EXPENSE ROUTER MIDDLEWARE");
   next();
 }
 
@@ -125,7 +127,7 @@ expenseRouter.get("/:id", async (req, res) => {
   const result = expenses.find((expense) => expense.id === id);
 
   if (!result) {
-    return res.status(404).json({ message: "Expense not found" });
+    throw new AppError("Expense not found", 404);
   }
 
   res.status(200).json({
@@ -135,7 +137,7 @@ expenseRouter.get("/:id", async (req, res) => {
 });
 
 expenseRouter.post("/", validationMiddleware, async (req, res) => {
-  console.log("postrouteExecuted");
+  // console.log("postrouteExecuted");
   const expenses = await loadExpenses();
   const newExpense = {
     id: crypto.randomUUID(),
@@ -202,6 +204,7 @@ expenseRouter.delete("/:id", async (req, res) => {
 });
 
 app.use(notFoundMiddleware);
+app.use(globalErrorHandler);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
