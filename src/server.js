@@ -164,9 +164,7 @@ expenseRouter.put("/:id", async (req, res) => {
   const matchingExpense = expenses.find((expense) => expense.id === id);
 
   if (!matchingExpense) {
-    return res.status(404).json({
-      message: "Requested resource couldn't be found",
-    });
+    throw new AppError("Expense not found", 404);
   }
 
   const { title, amount, category } = req.body;
@@ -193,9 +191,7 @@ expenseRouter.delete("/:id", async (req, res) => {
   const requestedExpense = expenses.find((expense) => expense.id === id);
 
   if (!requestedExpense) {
-    return res.status(404).json({
-      message: "Requested Resource coudnt find",
-    });
+    throw new AppError("Expense not found", 404);
   }
 
   await saveExpenses(removeExpense);
