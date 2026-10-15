@@ -1,3 +1,5 @@
+import { AppError } from "../errors/AppError.js";
+
 // Validation Middleware
 
 export function validationMiddleware(req, res, next) {
@@ -6,61 +8,43 @@ export function validationMiddleware(req, res, next) {
   // title Validation
 
   if (!userInputs.hasOwnProperty("title")) {
-    return res.status(400).json({
-      message: "title is missing , please input the title",
-    });
+    throw new AppError("title is missing , please input the title", 400);
   }
 
   if (typeof userInputs.title !== "string") {
-    return res.status(400).json({
-      message: "title must be a string",
-    });
+    throw new AppError("title must be a string", 400);
   }
 
   if (userInputs.title.trim() === "") {
-    return res.status(400).json({
-      message: "title cant be empty",
-    });
+    throw new AppError("title cant be empty", 400);
   }
 
   // Amount validation
 
   if (!userInputs.hasOwnProperty("amount")) {
-    return res.status(400).json({
-      message: "amount is missing, please input the amount",
-    });
+    throw new AppError("amount is missing, please input the amount", 400);
   }
 
   if (typeof userInputs.amount !== "number") {
-    return res.status(400).json({
-      message: "amount must be a number",
-    });
+    throw new AppError("amount must be a number", 400);
   }
 
   if (userInputs.amount <= 0) {
-    return res.status(400).json({
-      message: "amount must be greater than zero",
-    });
+    throw new AppError("amount must be greater than zero", 400);
   }
 
   // Category Validation
 
   if (!userInputs.hasOwnProperty("category")) {
-    return res.status(400).json({
-      message: "category is missing, please input the category",
-    });
+    throw new AppError("category is missing, please input the category", 400);
   }
 
   if (typeof userInputs.category !== "string") {
-    return res.status(400).json({
-      message: "category must be a string",
-    });
+    throw new AppError("category must be a string", 400);
   }
 
   if (userInputs.category.trim() === "") {
-    return res.status(400).json({
-      message: "category can't be empty",
-    });
+    throw new AppError("category can't be empty", 400);
   }
 
   next();
