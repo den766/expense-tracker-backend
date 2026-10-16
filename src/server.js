@@ -6,6 +6,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { requestLogger } from "./middlewares/requestLogger.js";
 import { validationMiddleware } from "./middlewares/validationMiddleware.js";
+import { queryValidationMiddleware } from "./middlewares/queryValidationMiddleware.js";
 import { notFoundMiddleware } from "./middlewares/notFoundMiddleware.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
 import { AppError } from "./errors/AppError.js";
@@ -43,7 +44,7 @@ app.use(requestLogger);
 expenseRouter.use(expenseMiddleware);
 app.use("/api/expenses", expenseRouter);
 
-expenseRouter.get("/", async (req, res) => {
+expenseRouter.get("/", queryValidationMiddleware, async (req, res) => {
   let expenses = await loadExpenses();
 
   const categoryInfo = req.query.category;
@@ -52,32 +53,6 @@ expenseRouter.get("/", async (req, res) => {
   const page = Number(req.query.page);
   const defualtLimit = 5;
   const limit = Number(req.query.limit) || defualtLimit;
-
-  if (categoryInfo === "") {
-    return res.status(404).json({
-      message: "Invalid Filter Query",
-    });
-  }
-
-  if (searchInfo === "") {
-    return res.status(404).json({
-      message: "Missing Search Query",
-    });
-  }
-
-  if (sortInfo !== undefined) {
-    if (sortInfo === "") {
-      return res.status(400).json({
-        message: "Missing Sort Value",
-      });
-    }
-
-    if (sortInfo !== "amount_asc" && sortInfo !== "amount_desc") {
-      return res.status(400).json({
-        message: "Invalid Sort Value",
-      });
-    }
-  }
 
   let result = expenses;
 
@@ -105,9 +80,7 @@ expenseRouter.get("/", async (req, res) => {
     const totalPages = Math.ceil(result.length / limit);
 
     if (page > totalPages) {
-      return res.status(404).json({
-        message: "Page out of range",
-      });
+      throw new AppError("Page out of range", 404);
     }
 
     const start = (page - 1) * limit;
