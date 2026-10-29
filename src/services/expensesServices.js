@@ -1,41 +1,43 @@
 import { AppError } from "../errors/AppError.js";
 import { loadExpenses } from "../persistence/expensesFile.js";
 
-export async function expensesService(dataObj) {
+export async function findExpenses(expenseQuery) {
   let expenses = await loadExpenses();
 
   let result = expenses;
 
-  if (dataObj.categoryInfo) {
+  if (expenseQuery.categoryInfo) {
     result = result.filter(
-      (expense) => expense.category === dataObj.categoryInfo.toLowerCase(),
+      (expense) => expense.category === expenseQuery.categoryInfo.toLowerCase(),
     );
   }
 
-  if (dataObj.searchInfo) {
+  if (expenseQuery.searchInfo) {
     result = result.filter((expense) =>
-      expense.title.toLowerCase().includes(dataObj.searchInfo.toLowerCase()),
+      expense.title
+        .toLowerCase()
+        .includes(expenseQuery.searchInfo.toLowerCase()),
     );
   }
 
-  if (dataObj.sortInfo === "amount_asc") {
+  if (expenseQuery.sortInfo === "amount_asc") {
     result = result.toSorted((a, b) => a.amount - b.amount);
   }
 
-  if (dataObj.sortInfo === "amount_desc") {
+  if (expenseQuery.sortInfo === "amount_desc") {
     result = result.toSorted((a, b) => b.amount - a.amount);
   }
 
-  if (dataObj.page) {
-    const totalPages = Math.ceil(result.length / dataObj.limit);
+  if (expenseQuery.page) {
+    const totalPages = Math.ceil(result.length / expenseQuery.limit);
 
-    if (dataObj.page > totalPages) {
+    if (expenseQuery.page > totalPages) {
       throw new AppError("Page out of range", 404);
     }
 
-    const start = (dataObj.page - 1) * dataObj.limit;
+    const start = (expenseQuery.page - 1) * expenseQuery.limit;
 
-    const end = start + dataObj.limit;
+    const end = start + expenseQuery.limit;
 
     result = result.slice(start, end);
   }

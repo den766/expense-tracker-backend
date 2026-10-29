@@ -1,7 +1,7 @@
-import { expensesService } from "../services/expensesServices.js";
+import {findExpenses } from "../services/expensesServices.js";
 export async function getExpenses(req, res) {
   const defualtLimit = 5;
-  const dataObj = {
+  const expenseQuery  = {
     categoryInfo: req.query.category,
     searchInfo: req.query.search,
     sortInfo: req.query.sort,
@@ -9,7 +9,7 @@ export async function getExpenses(req, res) {
     limit: Number(req.query.limit) || defualtLimit,
   };
 
-  const result = await expensesService(dataObj);
+  const expenses  = await findExpenses(expenseQuery );
 
-  res.status(200).json(result);
+  res.status(200).json(expenses );
 }
