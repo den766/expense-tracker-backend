@@ -44,3 +44,15 @@ export async function findExpenses(expenseQuery) {
 
   return result;
 }
+
+export async function findExpenseById(id) {
+  const expenses = await loadExpenses();
+
+  const result = expenses.find((expense) => expense.id === id);
+
+  if (!result) {
+    throw new AppError("Expense not found", 404);
+  }
+
+  return result;
+}

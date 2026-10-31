@@ -5,16 +5,13 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { requestLogger } from "./middlewares/requestLogger.js";
 import { validationMiddleware } from "./middlewares/validationMiddleware.js";
-import { queryValidationMiddleware } from "./middlewares/queryValidationMiddleware.js";
 import { notFoundMiddleware } from "./middlewares/notFoundMiddleware.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
 import { AppError } from "./errors/AppError.js";
-import { getExpenses } from "./controllers/expensesController.js";
 import { loadExpenses } from "./persistence/expensesFile.js";
-
+import expenseRouter from "./routes/expensesRouter.js";
 
 const filePath = path.join("src", "data", "expenses.json");
-
 
 async function saveExpenses(expense) {
   const data = JSON.stringify(expense);
@@ -22,7 +19,6 @@ async function saveExpenses(expense) {
   await fs.writeFile(filePath, data);
 }
 
-const expenseRouter = express.Router();
 
 function expenseMiddleware(req, res, next) {
   // console.log("EXPENSE ROUTER MIDDLEWARE");
@@ -36,25 +32,6 @@ app.use(express.json());
 app.use(requestLogger);
 expenseRouter.use(expenseMiddleware);
 app.use("/api/expenses", expenseRouter);
-
-
-expenseRouter.get("/", queryValidationMiddleware,getExpenses );
-
-expenseRouter.get("/:id", async (req, res) => {
-  const expenses = await loadExpenses();
-  const id = req.params.id;
-
-  const result = expenses.find((expense) => expense.id === id);
-
-  if (!result) {
-    throw new AppError("Expense not found", 404);
-  }
-
-  res.status(200).json({
-    result,
-    message: "Succesfully retrieved the resource",
-  });
-});
 
 expenseRouter.post("/", validationMiddleware, async (req, res) => {
   // console.log("postrouteExecuted");
@@ -121,6 +98,5 @@ expenseRouter.delete("/:id", async (req, res) => {
 
 app.use(notFoundMiddleware);
 app.use(globalErrorHandler);
-
 
 export default app;

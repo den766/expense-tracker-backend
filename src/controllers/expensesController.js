@@ -1,4 +1,5 @@
-import {findExpenses } from "../services/expensesServices.js";
+import {findExpenses , findExpenseById } from "../services/expensesServices.js";
+
 export async function getExpenses(req, res) {
   const defualtLimit = 5;
   const expenseQuery  = {
@@ -13,3 +14,16 @@ export async function getExpenses(req, res) {
 
   res.status(200).json(expenses );
 }
+
+export async function getExpenseById(req, res) {
+
+  const id = req.params.id;
+
+  const expense = await findExpenseById(id);
+
+  res.status(200).json({
+    expense,
+    message: "Succesfully retrieved the resource",
+  });
+  
+} 
