@@ -1,8 +1,12 @@
-import {findExpenses , findExpenseById } from "../services/expensesServices.js";
+import {
+  findExpenses,
+  findExpenseById,
+  createExpense,
+} from "../services/expensesServices.js";
 
 export async function getExpenses(req, res) {
   const defualtLimit = 5;
-  const expenseQuery  = {
+  const expenseQuery = {
     categoryInfo: req.query.category,
     searchInfo: req.query.search,
     sortInfo: req.query.sort,
@@ -10,13 +14,12 @@ export async function getExpenses(req, res) {
     limit: Number(req.query.limit) || defualtLimit,
   };
 
-  const expenses  = await findExpenses(expenseQuery );
+  const expenses = await findExpenses(expenseQuery);
 
-  res.status(200).json(expenses );
+  res.status(200).json(expenses);
 }
 
 export async function getExpenseById(req, res) {
-
   const id = req.params.id;
 
   const expense = await findExpenseById(id);
@@ -25,5 +28,20 @@ export async function getExpenseById(req, res) {
     expense,
     message: "Succesfully retrieved the resource",
   });
-  
-} 
+}
+
+export async function createExpenseController(req, res) {
+  const expenseData = {
+    title: req.body.title,
+    amount: req.body.amount,
+    category: req.body.category,
+    createdAt: req.body.createdAt,
+  };
+
+  const newExpense = await createExpense(expenseData);
+
+  res.status(201).json({
+    newExpense,
+    message: "expense created Sucessfully",
+  });
+}

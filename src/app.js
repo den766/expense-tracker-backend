@@ -33,27 +33,7 @@ app.use(requestLogger);
 expenseRouter.use(expenseMiddleware);
 app.use("/api/expenses", expenseRouter);
 
-expenseRouter.post("/", validationMiddleware, async (req, res) => {
-  // console.log("postrouteExecuted");
-  const expenses = await loadExpenses();
-  const newExpense = {
-    id: crypto.randomUUID(),
-    title: req.body.title,
-    amount: req.body.amount,
-    category: req.body.category,
-    createdAt: req.body.createdAt,
-  };
-
-  expenses.push(newExpense);
-
-  await saveExpenses(expenses);
-
-  res.status(201).json({
-    newExpense,
-    message: "expense created Sucessfully",
-  });
-});
-
+  
 expenseRouter.put("/:id", async (req, res) => {
   const expenses = await loadExpenses();
   const id = req.params.id;

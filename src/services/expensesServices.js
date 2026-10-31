@@ -1,5 +1,6 @@
 import { AppError } from "../errors/AppError.js";
-import { loadExpenses } from "../persistence/expensesFile.js";
+import { loadExpenses, saveExpenses } from "../persistence/expensesFile.js";
+import crypto from "node:crypto";
 
 export async function findExpenses(expenseQuery) {
   let expenses = await loadExpenses();
@@ -55,4 +56,24 @@ export async function findExpenseById(id) {
   }
 
   return result;
+}
+
+export async function createExpense(expenseData) {
+  const expenses = await loadExpenses();
+
+  const newExpense = {
+    id: crypto.randomUUID(),
+    title: expenseData.title,
+    amount: expenseData.amount,
+    category: expenseData.category,
+    createdAt: expenseData.createdAt,
+  };
+
+ 
+
+  expenses.push(newExpense);
+
+  await saveExpenses(expenses);
+
+  return newExpense;
 }

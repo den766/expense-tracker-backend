@@ -7,3 +7,9 @@ export async function loadExpenses() {
   return JSON.parse(data);
 }
 
+
+export async function saveExpenses(expenses) {
+  const data = JSON.stringify(expenses);
+
+  await fs.writeFile(filePath, data);
+}
